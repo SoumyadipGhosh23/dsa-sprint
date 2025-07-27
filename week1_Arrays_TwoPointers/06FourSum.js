@@ -4,6 +4,7 @@
  * @param {number} target
  * @return {number[][]}
  */
+// https://leetcode.com/problems/4sum/
 var fourSum = function (nums, target) {
     const result = [];
     if (nums.length < 4) {

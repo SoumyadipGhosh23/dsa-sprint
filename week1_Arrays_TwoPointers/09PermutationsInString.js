@@ -3,6 +3,7 @@
  * @param {string} s2
  * @return {boolean}
  */
+// https://leetcode.com/problems/permutation-in-string/
 var checkInclusion = function (s1, s2) {
     // --- Bug Analysis ---
     // The original code had a few issues:

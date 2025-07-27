@@ -1,3 +1,4 @@
+// https://leetcode.com/problems/maximum-average-subarray-i/
 function MaxSumSubArrayOfSizeK(nums,k){
     if(nums.length < k) return 0
     let sum  = 0

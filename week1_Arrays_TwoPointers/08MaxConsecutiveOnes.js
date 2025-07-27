@@ -3,6 +3,7 @@
  * @param {number} k
  * @return {number}
  */
+// https://leetcode.com/problems/max-consecutive-ones-iii/
 var longestOnes = function (nums, k) {
     let left = 0, right = 0;
     // Using k directly to track remaining flips is common and clearer.
