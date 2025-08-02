@@ -1,23 +1,5 @@
-/**
- * @param {string} s1
- * @param {string} s2
- * @return {boolean}
- */
 // https://leetcode.com/problems/permutation-in-string/
 var checkInclusion = function (s1, s2) {
-    // --- Bug Analysis ---
-    // The original code had a few issues:
-    // 1. The sliding window logic was incorrect. It reset the frequency map in each iteration
-    //    instead of "sliding" by adding a new character and removing an old one.
-    // 2. The logic to update character counts was flawed. A character leaving the window
-    //    should have its count restored, not decremented.
-    // 3. The line `temp.delete(str2[i=j])` was a syntax and logic error.
-    // 4. The method for cloning the map was very inefficient.
-    //
-    // --- The Fix ---
-    // The code below implements a standard and efficient sliding window algorithm.
-    // We maintain one frequency map and update it as the window slides over s2.
-
     // Edge case: If s1 is longer than s2, a permutation is impossible.
     if (s1.length > s2.length) {
         return false;
