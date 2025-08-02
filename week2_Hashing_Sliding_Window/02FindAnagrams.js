@@ -20,3 +20,5 @@ var findAnagrams = function (s, p) {
 
     return result;
 };
+
+console.log(findAnagrams("cbaebabacd", "abc"));
