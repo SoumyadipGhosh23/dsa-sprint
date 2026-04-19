@@ -1029,6 +1029,79 @@ console.log(
 ); // true
 
 
+/* ----------------------------------------------------------------------------
+5.7 The Constructor Approach vs Pure Prototypal Approach
+---------------------------------------------------------------------------- */
+
+/*
+new Parent()
+
+This is constructor-based object creation.
+
+It does 4 things:
+
+creates a new empty object
+links its [[Prototype]] to:
+Parent.prototype
+executes the constructor:
+Parent.call(newObj)
+
+with this = newObj
+
+So constructor logic runs:
+
+this.name = "Soumya"
+this.age = 25
+
+etc.
+
+returns the object
+(unless constructor explicitly returns another object)
+*/
+
+function Dev(name) {
+    this.name = name;
+}
+
+Dev.prototype.greet = function() {
+    console.log(`Hi, I'm ${this.name}`);
+};
+
+const meNew = new Dev('Soumya'); 
+// Result: { name: 'Soumya' } with proto link to Dev.prototype
+
+/*
+Object.create(parent)
+
+This is pure prototype delegation.
+
+It does basically:
+
+creates a new empty object
+links its [[Prototype]] directly to:
+parent
+returns it
+
+That's it.
+
+No constructor runs.
+
+No this
+
+No initialization logic.
+*/
+
+const devProto = {
+    greet: function() {
+        console.log(`Hi, I'm ${this.name}`);
+    }
+};
+
+const meCreate = Object.create(devProto);
+meCreate.name = 'Soumya'; 
+// Result: {} (empty object) with proto link to devProto
+
+
 /* ============================================================================
 6. CLASS IN JAVASCRIPT IS MOSTLY SYNTACTIC SUGAR
 ============================================================================ */
