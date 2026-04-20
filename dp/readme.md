@@ -20,3 +20,4 @@ A problem is likely a variation of the 0/1 Knapsack if it fits this pattern:
 ### Related Problems
 Problems that are variations of the 0/1 Knapsack pattern include:
 - Subset Sum Problem
+- Equal sum problem
