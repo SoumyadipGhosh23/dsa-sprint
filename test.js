@@ -1,17 +1,8 @@
-function Animal(name) {
-    this.name = name;
+function ParentFunction() {
+  this.name = "This won't be returned";
+
+
 }
 
-Animal.prototype.eat = function () {
-    console.log(`${this.name} is eating`);
-};
-
-function Dog(name, breed) {
-    Animal.call(this, name); // borrow parent constructor logic
-    this.breed = breed;
-}
-
-Dog.prototype = Object.create(Animal.prototype);
-Dog.prototype.constructor = Dog;
-const babyDog = new Dog('kutta')
-babyDog.eat()
+const obj = new ParentFunction();
+console.log( obj); // This will log the explicitly returned object: { name: "I am the returned object" }
