@@ -5,7 +5,7 @@
 class Solution {
     subsetSum(arr, n, sum, dp) {
         if (sum == 0) return true;
-        if (n == 0 && sum > 0) return false;
+        if (n == 0) return false;
 
         if (dp[n][sum] !== -1) return dp[n][sum];
 
@@ -27,3 +27,6 @@ class Solution {
         }
     }
 }
+
+const obj = new Solution();
+console.log(obj.minDifference([1, 6, 11, 5]));

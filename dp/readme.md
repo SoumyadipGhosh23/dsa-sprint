@@ -21,3 +21,23 @@ A problem is likely a variation of the 0/1 Knapsack if it fits this pattern:
 Problems that are variations of the 0/1 Knapsack pattern include:
 - Subset Sum Problem
 - Equal sum problem
+- Count of subsets with given sum
+- Minimum sum partition
+- Target Sum
+
+## Unbounded Knapsack Problem
+
+### Identifying Unbounded Knapsack Problems
+
+- We can **pick** an item any number of times.
+
+### Related Problems
+Problems that are variations of the Unbounded Knapsack pattern include:
+- Rod Cutting 
+
+
+## Longest Common Subsequences
+
+### Related Problems
+- Longest Common Substring
+- Longest Palindromic Subsequence
