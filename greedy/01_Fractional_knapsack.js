@@ -1,50 +1,68 @@
+/**
+ * FRACTIONAL KNAPSACK
+ *
+ * Problem: Given items with values and weights, maximize total value in a knapsack
+ *          of given capacity. You can take FRACTIONS of items (unlike 0/1 knapsack).
+ *
+ * Greedy Intuition:
+ * - To maximize value, prioritize items that give the MOST value per unit weight
+ * - Calculate value/weight ratio for each item
+ * - Sort by ratio descending
+ * - Take as much as possible of the best ratio item first
+ *
+ * Why Greedy Works:
+ * - Local optimal choice (highest ratio) leads to global optimal
+ * - No future decision affects past choices
+ * - Exchange argument: Any optimal solution can be transformed to include
+ *   the highest ratio item without decreasing total value
+ *
+ * Time Complexity: O(n log n) for sorting
+ * Space Complexity: O(n) for storing items
+ */
+
 function compare(a, b) {
-    console.info(a,b)
-    let a1 = (1.0 * a[0]) / a[1];
-    let b1 = (1.0 * b[0]) / b[1];
-    return b1 - a1;
+    // Compare by value/weight ratio (descending)
+    const ratioA = a[0] / a[1];
+    const ratioB = b[0] / b[1];
+    return ratioB - ratioA;
 }
 
-function fractionalKnapsack(val, wt, capacity) {
-    let n = val.length;
+function fractionalKnapsack(values, weights, capacity) {
+    const n = values.length;
 
-    // Create array to store value and weight
-    // items[i][0] = value, items[i][1] = weight
-    let items = [];
+    // Create pairs of [value, weight]
+    const items = [];
     for (let i = 0; i < n; i++) {
-        items.push([val[i], wt[i]]);
+        items.push([values[i], weights[i]]);
     }
-    console.info(items)
 
-    // Sort items based on value-to-weight ratio in descending order
+    // Sort by value/weight ratio in descending order
     items.sort(compare);
 
-    let res = 0.0;
-    let currentCapacity = capacity;
+    let totalValue = 0;
+    let remainingCapacity = capacity;
 
-    // Process items in sorted order
     for (let i = 0; i < n; i++) {
+        const [value, weight] = items[i];
 
-        // If we can take the entire item
-        if (items[i][1] <= currentCapacity) {
-            res += items[i][0];
-            currentCapacity -= items[i][1];
-        }
-
-        // Otherwise take a fraction of the item
-        else {
-            res += (1.0 * items[i][0] / items[i][1]) * currentCapacity;
-
-            // Knapsack is full
-            break;
+        if (weight <= remainingCapacity) {
+            // Take the entire item
+            totalValue += value;
+            remainingCapacity -= weight;
+        } else {
+            // Take fraction of item to fill remaining capacity
+            const fraction = remainingCapacity / weight;
+            totalValue += value * fraction;
+            break; // Knapsack is full
         }
     }
 
-    return res;
+    return totalValue;
 }
-// Driver Code
-let val = [60, 100, 120];
-let wt = [10, 20, 30];
-let capacity = 50;
 
-console.log(fractionalKnapsack(val, wt, capacity));
+// Test
+const values = [60, 100, 120];
+const weights = [10, 20, 30];
+const capacity = 50;
+
+console.log(fractionalKnapsack(values, weights, capacity)); // Output: 240

@@ -1,196 +1,195 @@
 # Greedy Algorithms
 
-## Identifying a Greedy Problem
-We usually identify a Greedy problem by these characteristics:
+## How to Identify a Greedy Problem
 
-### 1. Optimal Solution Required
-The problem asks for optimizations like:
-- Minimum
-- Maximum
-- Largest
-- Smallest
-- Fewest
-- Earliest finish
-- Maximum profit
-
-### 2. Local Best Choice Works
-At every step, making the best immediate (local) choice helps lead to the overall best (global) answer.
-
-### 3. No Need to Reconsider Previous Choices
-Once a decision is made, we usually don’t go back and change it.
-
-### 4. Choices Don’t Depend on Future Decisions Much
-The current best decision can be taken confidently without exploring all future possibilities.
+| Characteristic | Description |
+|---------------|-------------|
+| **Optimization Goal** | Problem asks for: Minimum, Maximum, Largest, Smallest, Maximum Profit, Earliest Finish |
+| **Local Choice Works** | Making the best immediate choice leads to global optimal |
+| **No Backtracking** | Once a decision is made, it never needs to be reconsidered |
+| **Future Independence** | Current decision doesn't depend heavily on future choices |
 
 ---
 
-## Simple Difference from Dynamic Programming (DP)
+## Greedy vs Dynamic Programming
 
-### DP (Dynamic Programming):
-- Try **all** possible choices.
-- Store results (memoization/tabulation).
-- Find the best answer from all possibilities.
-
-### Greedy:
-- Directly take the **best-looking choice** right now and move forward.
-
-
-
-# 03. Job Sequencing
-here my main intution was we need to do the job with max profit, so I sort in that order, but then I thought each job
-````md
-## Job Sequencing Notes
-
-### My First Thought
-
-I first thought:
-
-- Sort jobs by profit in descending order
-- Keep a `today` counter
-- If `today < deadline`, take the job
-
-Example:
-
-```js
-if (today < jobDeadline) {
-    noOfJobs++;
-    totalProfit += jobProfit;
-    today++;
-}
-````
-
-### Why This Is Wrong
-
-This assumes every job must be done on the **next immediate day**.
-
-But actually, a job can be done on **any slot before its deadline**, not just on the current running day.
-
-Example:
-
-If `deadline = 4`, the job can be scheduled on:
-
-* Day 1
-* Day 2
-* Day 3
-* Day 4
-
-So the problem is not about counting how many jobs we have done, it is about checking which time slots are still free.
-
-That means tracking only `today` is incorrect.
+| Aspect | Greedy | Dynamic Programming |
+|--------|--------|---------------------|
+| Approach | Take best choice NOW | Try ALL possible choices |
+| State | No state/memory needed | Store results (memoization/tabulation) |
+| Guarantee | Works only if greedy choice property holds | Always finds optimal (if state space is manageable) |
+| Constraints | Usually N > 10^5 | Usually N < 10^4 (N=500 or 2000 screams DP) |
 
 ---
 
-### Second Solution
+## Common Greedy Patterns
 
-Then I used the correct greedy idea:
+### Pattern 1: Sort by Ratio/Value
+**When:** Need to maximize value per unit
+**Key:** Define a comparison metric, sort descending
+**Examples:** Fractional Knapsack (value/weight ratio)
 
-* Sort jobs by profit in descending order
-* Create a `slots[]` array to track occupied days
-* For every job, check from `deadline → 1`
-* Place the job in the latest free slot
+### Pattern 2: Sort by End Time (Interval Scheduling)
+**When:** Selecting maximum non-overlapping items
+**Key:** Earliest finisher leaves most room for others
+**Examples:** Activity Selection, N Meetings in One Room
 
-Example:
+### Pattern 3: Two-Pointer Timeline Sweep
+**When:** Tracking concurrent events over time
+**Key:** Sort events, use two pointers to simulate timeline
+**Examples:** Minimum Platforms, Merge Intervals
 
-```js
-for (let day = jobDeadline; day >= 1; day--) {
-    if (!slots[day]) {
-        slots[day] = true;
-        noOfJobs++;
-        totalProfit += jobProfit;
-        break;
-    }
-}
-```
-
-### Why This Gives TLE
-
-Although this logic is correct, for every job we scan backwards:
-
-```js
-for (day = deadline; day >= 1; day--)
-```
-
-So time complexity becomes:
-
-```text
-O(n * maxDeadline)
-```
-
-For large inputs, this becomes too slow and causes TLE.
+### Pattern 4: Greedy + Data Structure (DSU/Priority Queue)
+**When:** Need fast lookup for "best available slot"
+**Key:** Sort by primary criteria, use DSU/heap for allocation
+**Examples:** Job Sequencing (DSU), Huffman Coding (Heap)
 
 ---
 
-### Final Optimized Solution (DSU / Union Find)
+## Problem Index
 
-To avoid scanning every day manually, we use Disjoint Set (Union Find).
-
-The goal is to quickly find:
-
-> the latest available free slot before or on the deadline
-
-Instead of checking every slot one by one.
-
-Main idea:
-
-```js
-availableSlot = find(jobDeadline)
-```
-
-This means:
-
-> Give me the latest free slot I can still use for this job
-
-After using a slot:
-
-```js
-parent[availableSlot] = find(availableSlot - 1)
-```
-
-This means:
-
-* Current slot is now occupied
-* Next time, redirect to the previous available free slot
-
-This makes the solution much faster and avoids TLE.
+| # | Problem | Pattern | Key Insight |
+|---|---------|---------|-------------|
+| 01 | Fractional Knapsack | Sort by Ratio | Value/Weight ratio determines priority |
+| 02 | N Meetings in One Room | Interval Scheduling | Sort by end time, pick non-conflicting |
+| 03 | Activity Selection | Interval Scheduling | Same as #02 (different naming) |
+| 04 | Job Sequencing | Greedy + DSU | Sort by profit, schedule at latest free slot |
+| 05 | Minimum Platforms | Two-Pointer Timeline | Count max concurrent trains |
 
 ---
 
-## Final Learning
+## Problem Details
 
-### Wrong Approach
+### 01. Fractional Knapsack
 
-Using only:
+**Problem:** Maximize value in capacity-limited knapsack (can take fractions of items)
 
-```js
-today++
-```
+**Greedy Strategy:**
+1. Calculate value/weight ratio for each item
+2. Sort by ratio descending
+3. Take as much as possible of highest ratio items first
 
-because it assumes jobs must be done one after another only.
+**Why It Works:**
+- Local optimal (highest ratio) leads to global optimal
+- Exchange argument: Any optimal solution can include the highest ratio item without loss
 
----
-
-### Correct Greedy
-
-Use:
-
-```text
-Latest free slot <= deadline
-```
-
-because each job can be scheduled anywhere before its deadline.
+**Complexity:** O(n log n) time, O(n) space
 
 ---
 
-### Best Optimized Version
+### 02. N Meetings in One Room
 
-Use:
+**Problem:** Schedule maximum non-overlapping meetings in one room
 
-```text
-Greedy + DSU (Union Find)
+**Greedy Strategy:**
+1. Sort meetings by end time (ascending)
+2. Select first meeting
+3. For each subsequent meeting, select if it starts after last selected ends
+
+**Why Sort by End Time (not Start or Duration)?**
+- End time: Leaves maximum remaining time
+- Start time: Early start + long duration blocks many meetings  
+- Duration: Short but poorly timed still conflicts
+
+**Related:** Activity Selection Problem (identical logic)
+
+**Complexity:** O(n log n) time, O(n) space
+
+---
+
+### 03. Activity Selection
+
+**Problem:** Select maximum activities for single person (no overlaps)
+
+**Note:** Identical to "N Meetings in One Room" - different problem statement, same solution.
+
+**Greedy Strategy:**
+1. Sort by finish time
+2. Track `lastFinish` - end time of last selected activity
+3. Select activity if `start[i] >= lastFinish`
+4. Update `lastFinish = finish[i]`
+
+**Complexity:** O(n log n) time, O(n) space
+
+---
+
+### 04. Job Sequencing
+
+**Problem:** Schedule jobs with deadlines and profits to maximize total profit
+
+**Greedy Strategy:**
+1. Sort jobs by profit descending
+2. For each job, schedule at latest available slot before deadline
+3. Use DSU (Union-Find) to find slots in O(α(n))
+
+**Why Latest Slot?**
+- Leaves earlier slots free for jobs with tighter deadlines
+- Maximizes flexibility for remaining (lower profit) jobs
+
+**DSU Optimization:**
+```
+parent[i] = latest free slot at or before i
+find(x)   = get latest free slot ≤ x
+union     = mark slot used, point to previous slot
 ```
 
-for fast slot allocation. 
+**Complexity:** O(n log n + n·α(maxDeadline)) time, O(maxDeadline) space
 
+---
 
+### 05. Minimum Platforms
 
-Phase 1: The Greedy vs. DP SplitAsk yourself: "If I make a choice now, will I regret it later?"1. The Greedy Vibe (Local = Global)The Vibe: You can make a decision (like picking the smallest number) and never need to change your mind.The Proof: The Exchange Argument. If you swap any two items and the result gets worse, you’re in Greedy territory.Constraints: Usually $N > 10^5$. DP almost never works at this scale.2. The DP Vibe (Choices have Consequences)The Vibe: Picking the "best" thing now might screw you over later. You have to try "Option A" and "Option B" and see which path leads to a better future.The Sign: You see words like "Maximum ways to...", "Minimum cost to...", or "Can you reach...".Constraints: Usually $N < 10^4$. If you see $N=500$ or $N=2000$, your brain should scream DP.Phase 2: Choosing the Greedy ArchetypeIf you’ve settled on Greedy, you need to pick your "weapon." Think of it like this:Route A: The "Static" Sort (Sorting Pattern)When: All items are available at the start, and their "value" doesn't change after you pick one.The Logic: "If I order these items correctly, the answer will reveal itself."Mental Check: Can I define a single compare() function that works for every pair?Common Targets: Intervals, Fractional Knapsack, Job Scheduling.Route B: The "Dynamic" Best (Priority Queue Pattern)When: Every time you take an action, the "state" of the remaining items changes.The Logic: "I need the best item right now, but after I take it, I’ll need to find the new best item."Mental Check: Does picking an item create a new item? (e.g., merging two files into one).Common Targets: Huffman Coding, K-closest elements, Dijkstra’s.Route C: The "Timeline" (Two-Pointer/Event Pattern)When: You are dealing with time, arrival/departure, or points on a 1D line.The Logic: "I’m not picking items; I’m walking through time and reacting to events."Mental Check: Do things happen at specific "start" and "end" points?Common Targets: Minimum Platforms, Meeting Rooms, Merging Intervals.
+**Problem:** Find minimum platforms needed so no train waits
+
+**Pattern:** Two-Pointer Timeline Sweep
+
+**Strategy:**
+1. Sort arrivals and departures independently
+2. Use two pointers to process events chronologically
+3. Increment count on arrival, decrement on departure
+4. Track maximum count
+
+**Why Sort Independently?**
+- We don't need to match specific trains
+- Just need to count concurrent trains at any time
+- Similar to merging two sorted arrays
+
+**Complexity:** O(n log n) time, O(1) extra space
+
+---
+
+## Quick Decision Guide
+
+```
+Start Here: Can you make ONE choice and never regret it?
+    │
+    ├── YES → Greedy Candidate
+    │   │
+    │   ├── Items have ratios? → Sort by ratio (Fractional Knapsack)
+    │   │
+    │   ├── Intervals/Time slots? → Sort by end time (Activity Selection)
+    │   │
+    │   ├── Concurrent events? → Two-pointer sweep (Min Platforms)
+    │   │
+    │   └── Need best slot lookup? → Greedy + DSU/Heap (Job Sequencing)
+    │
+    └── NO → Try DP or Backtracking
+        │
+        ├── Small constraints (N < 10^4)? → DP
+        │
+        └── Need to explore all paths? → Backtracking/DFS
+```
+
+---
+
+## Exchange Argument (Greedy Proof Technique)
+
+To prove greedy works, show:
+1. There exists an optimal solution that includes your greedy choice
+2. If an optimal solution doesn't include it, you can swap to include it without worsening the result
+
+**Example (Activity Selection):**
+- Let G = greedy solution (pick earliest finisher)
+- Let O = any optimal solution
+- If O's first activity ends later than G's, swap them
+- Count stays same, so G is also optimal
